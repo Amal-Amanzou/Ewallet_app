@@ -1,13 +1,24 @@
 // recuperation des elements DOM
-const loginBtn  = document.getElementById("Loginbtn");
-//const signinBtn = document.getElementById("Signinbtn");
+const loginBtn = document.getElementById("Loginbtn");
 
-// bouton Login
+// event
 loginBtn.addEventListener("click", handleLogin);
 
-function handleLogin() {
-    loginBtn.textContent = "loading...";
+// function promise
+function goToLoginPage() {
+  return new Promise((resolve) => {
     setTimeout(() => {
-        document.location = "login.html";
+      resolve("done");
     }, 2000);
+  });
+}
+
+// handler
+function handleLogin() {
+  loginBtn.textContent = "loading...";
+
+  goToLoginPage()
+    .then(() => {
+      document.location = "login.html";
+    });
 }

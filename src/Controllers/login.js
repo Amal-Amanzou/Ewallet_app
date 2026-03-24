@@ -1,32 +1,49 @@
+// import
+import { finduserbymail } from "../Model/database.js";
 
-import {finduserbymail} from "../Model/database.js";
-
-// recuperation des elements DOM
+// DOM
 const mailInput = document.getElementById("mail");
-const passwordInput  = document.getElementById("password");
+const passwordInput = document.getElementById("password");
 const submitBtn = document.getElementById("submitbtn");
-const display   = document.getElementById("display");
-// event listener sur le bouton Se connecter
+const display = document.getElementById("display");
+
+// event
 submitBtn.addEventListener("click", handleSubmit);
 
+// function Promise
+function checkUserLogin(mail, password) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const user = finduserbymail(mail, password);
+
+      if (user) {
+        resolve(user);
+      } else {
+        reject("Bad credentials");
+      }
+    }, 2000);
+  });
+}
+
+// handler
 function handleSubmit() {
-    let mail = mailInput.value;
-    let password = passwordInput.value;
+  let mail = mailInput.value;
+  let password = passwordInput.value;
 
-    if (!mail || password === "") {
-        alert("Bad credentials.");
-    } else {
-        submitBtn.textContent = "Checking!!!";
-        const user = finduserbymail(mail, password);
+  if (!mail || password === "") {
+    alert("Bad credentials.");
+    return;
+  }
 
-        setTimeout(() => {
-            if (user) {
-                sessionStorage.setItem("currentUser", JSON.stringify(user));
-                document.location = "dashboard.html";
-            } else {
-                alert("Bad credentials.");
-                submitBtn.textContent = "Se connecter";
-            }
-        }, 2000);
-    }
+  submitBtn.textContent = "Checking...";
+
+  checkUserLogin(mail, password)
+    .then((user) => {
+      sessionStorage.setItem("currentUser", JSON.stringify(user));
+      document.location = "dashboard.html";
+    })
+    .catch((err) => {
+      alert(err);
+      submitBtn.textContent = "Se connecter";
+    });
 }
