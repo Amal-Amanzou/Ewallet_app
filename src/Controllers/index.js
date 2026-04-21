@@ -1,4 +1,4 @@
-// recuperation des elements DOM
+recuperation des elements DOM
 const loginBtn = document.getElementById("Loginbtn");
 
 // event

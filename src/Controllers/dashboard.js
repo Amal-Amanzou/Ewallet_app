@@ -1,4 +1,4 @@
-import { getbeneficiaries, finduserbyaccount, findbeneficiarieByid } from "../Model/database.js";
+import { getbeneficiaries, finduserbyaccount, findbeneficiarieByid, findcardbynum } from "../../front-end/src/Model/database.js";
 
 const user = JSON.parse(sessionStorage.getItem("currentUser"));
 
@@ -18,6 +18,14 @@ const beneficiarySelect = document.getElementById("beneficiary");
 const sourceCard = document.getElementById("sourceCard");
 const submitTransferBtn = document.getElementById("submitTransferBtn");
 
+// Recharge DOM elements
+const topupBtn = document.getElementById("quickTopup");
+const topupSection = document.getElementById("rechargePopup");
+const closeTopupBtn = document.getElementById("closeRechargeBtn");
+const cancelTopupBtn = document.getElementById("cancelRechargeBtn");
+const rechargeCardSelect = document.getElementById("rechargeCard");
+const submitTopupBtn = document.getElementById("submitRechargeBtn");
+
 // Guard
 if (!user) {
   alert("User not authenticated");
@@ -29,6 +37,11 @@ transferBtn.addEventListener("click", handleTransfersection);
 closeTransferBtn.addEventListener("click", closeTransfer);
 cancelTransferBtn.addEventListener("click", closeTransfer);
 submitTransferBtn.addEventListener("click", handleTransfer);
+
+topupBtn.addEventListener("click", openRecharge);
+closeTopupBtn.addEventListener("click", closeRecharge);
+cancelTopupBtn.addEventListener("click", closeRecharge);
+submitTopupBtn.addEventListener("click", handleRecharge);
 
 // ================= Dashboard =================
 
@@ -104,6 +117,13 @@ user.wallet.cards.forEach(card => {
   sourceCard.appendChild(option);
 });
 
+user.wallet.cards.forEach(card => {
+  const option = document.createElement("option");
+  option.value = card.numcards;
+  option.textContent = card.type + " ****" + card.numcards.slice(-4);
+  rechargeCardSelect.appendChild(option);
+});
+
 // ================= PROMISE FUNCTIONS =================
 
 // 1
@@ -175,40 +195,167 @@ function addtransactions(expediteur, destinataire, amount) {
 
 // ================= TRANSFER =================
 
-function transfer(expediteur, numcompte, amount) {
+async function transfer(expediteur, numcompte, amount) {
+  try {
+    // Étape 1 : vérifier utilisateur
+    const destinataire = await checkUser(numcompte);
+    console.log("Étape 1:", destinataire.name);
 
-  checkUser(numcompte)
-    .then(destinataire => {
-      console.log("Étape 1:", destinataire.name);
-      return checkSolde(expediteur, amount)
-        .then(() => destinataire);
-    })
-    .then(destinataire => {
-      console.log("Étape 2: solde ok");
-      return updateSolde(expediteur, destinataire, amount)
-        .then(() => destinataire);
-    })
-    .then(destinataire => {
-      console.log("Étape 3: balance updated");
-      return addtransactions(expediteur, destinataire, amount);
-    })
-    .then(msg => {
-      console.log("Étape 4:", msg);
-      renderDashboard();
-    })
-    .catch(err => {
-      console.error("Erreur:", err);
-    });
+    // Étape 2 : vérifier solde
+    await checkSolde(expediteur, amount);
+    console.log("Étape 2: solde ok");
+
+    // Étape 3 : update solde
+    await updateSolde(expediteur, destinataire, amount);
+    console.log("Étape 3: balance updated");
+
+    // Étape 4 : ajouter transaction
+    const msg = await addtransactions(expediteur, destinataire, amount);
+    console.log("Étape 4:", msg);
+
+    renderDashboard();
+
+  } catch (err) {
+    console.error("Erreur:", err);
+  }
 }
 
 // ================= HANDLE =================
 
-function handleTransfer(e) {
+async function handleTransfer(e) {
   e.preventDefault();
 
-  const beneficiaryId = beneficiarySelect.value;
-  const beneficiaryAccount = findbeneficiarieByid(user.id, beneficiaryId).account;
-  const amount = Number(document.getElementById("amount").value);
+  try {
+    const beneficiaryId = beneficiarySelect.value;
+    const beneficiaryAccount = findbeneficiarieByid(user.id, beneficiaryId).account;
+    const amount = Number(document.getElementById("amount").value);
 
-  transfer(user, beneficiaryAccount, amount);
+    await transfer(user, beneficiaryAccount, amount);
+
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+// ================= RECHARGE POPUP =================
+
+function openRecharge() {
+  topupSection.classList.add("active");
+}
+
+function closeRecharge() {
+  topupSection.classList.remove("active");
+}
+
+// ================= RECHARGE PROMISES =================
+
+// 1. Validate amount
+function validateRechargeAmount(amount) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (amount > 0) {
+        resolve(amount);
+      } else {
+        reject("Le montant doit être supérieur à 0");
+      }
+    }, 300);
+  });
+}
+
+// 2. Validate card ownership and expiry
+function validateRechargeCard(userId, numcard) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      const card = findcardbynum(userId, numcard);
+      if (!card) {
+        reject("Carte introuvable ou n'appartient pas à l'utilisateur");
+        return;
+      }
+      const today = new Date();
+      const expiry = new Date(card.expiry);
+      if (expiry < today) {
+        reject("Carte expirée");
+        return;
+      }
+      resolve(card);
+    }, 400);
+  });
+}
+
+// 3. Apply recharge to wallet
+function applyRecharge(user, amount) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      user.wallet.balance += amount;
+      resolve("Solde mis à jour");
+    }, 500);
+  });
+}
+
+// 4. Record recharge transaction
+function recordRechargeTransaction(user, amount, cardNum, status) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const transaction = {
+        id: Date.now(),
+        type: status === "success" ? "recharge" : "recharge-failed",
+        amount,
+        date: new Date().toLocaleString(),
+        from: "Carte ****" + cardNum.slice(-4),
+        status
+      };
+      user.wallet.transactions.push(transaction);
+      resolve(transaction);
+    }, 300);
+  });
+}
+
+// ================= RECHARGE FLOW =================
+
+async function recharge(user, numcard, amount) {
+  try {
+    // Étape 1
+    await validateRechargeAmount(amount);
+    console.log("Étape 1: montant valide");
+
+    // Étape 2
+    await validateRechargeCard(user.id, numcard);
+    console.log("Étape 2: carte valide");
+
+    // Étape 3
+    await applyRecharge(user, amount);
+    console.log("Étape 3: solde rechargé");
+
+    // Étape 4
+    await recordRechargeTransaction(user, amount, numcard, "success");
+    console.log("Étape 4: transaction enregistrée");
+
+    renderDashboard();
+    closeRecharge();
+    alert("Recharge effectuée avec succès ! +" + amount + " MAD");
+
+  } catch (err) {
+    console.error("Erreur recharge:", err);
+
+    await recordRechargeTransaction(user, amount, numcard, "failed");
+    renderDashboard();
+
+    alert("Echec de la recharge : " + err);
+  }
+}
+
+// ================= HANDLE RECHARGE =================
+
+async function handleRecharge(e) {
+  e.preventDefault();
+
+  try {
+    const numcard = rechargeCardSelect.value;
+    const amount = Number(document.getElementById("rechargeAmount").value);
+
+    await recharge(user, numcard, amount);
+
+  } catch (err) {
+    console.error(err);
+  }
 }

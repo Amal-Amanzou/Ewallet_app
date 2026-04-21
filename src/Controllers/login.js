@@ -1,4 +1,4 @@
-// import
+  import
 import { finduserbymail } from "../Model/database.js";
 
 // DOM
