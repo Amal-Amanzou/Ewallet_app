@@ -1,0 +1,147 @@
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* =====================
+   GLOBAL
+===================== */
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(to right, #f9dcee, #efdcf2);
+  color: #333;
+  line-height: 1.6;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* =====================
+   HEADER / NAVBAR
+===================== */
+header {
+  background: #fbfafa;
+  box-shadow: 0 2px 8px rgba(235, 185, 224, 0.05);
+}
+
+.navbar {
+  max-width: 1200px;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+}
+
+.navbar .logo img {
+  height: 90px;
+}
+
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 30px;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #666;
+  font-weight: 500;
+  transition: color 0.3s, transform 0.2s;
+}
+
+.nav-links a:hover {
+  color: #3b66f6;
+  transform: translateY(-2px);
+}
+
+/* =====================
+   HERO SECTION
+===================== */
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 50px auto;
+  padding: 0 40px;
+  gap: 40px;
+}
+
+.hero-content {
+  max-width: 600px;
+}
+
+.hero-content h1 {
+  font-size: 3.5rem;
+  margin-bottom: 20px;
+  color: #1e2a78;
+}
+
+.hero-content p {
+  font-size: 1.1rem;
+  color: #555;
+  margin-bottom: 30px;
+}
+
+/* =====================
+   BUTTONS (GLOBAL)
+===================== */
+.buttons {
+  display: flex;
+  gap: 20px;
+}
+
+.btn {
+  text-decoration: none;
+  display: inline-block;
+  padding: 12px 30px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  font-size: 0.95rem;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #6a7cff, #5f6fff);
+  color: #fff;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(95, 111, 255, 0.35);
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+.btn-secondary {
+  border: 2px solid #3b66f6;
+  color: #3b66f6;
+  background: transparent;
+}
+
+.btn-secondary:hover {
+  background-color: #3b66f6;
+  color: #fff;
+}
+
+/* =====================
+   HERO IMAGE
+===================== */
+.hero-image img {
+  max-width: 500px;
+  border-radius: 25px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s;
+}
+
+.hero-image img:hover {
+  transform: scale(1.05);
+}

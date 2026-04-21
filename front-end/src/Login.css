@@ -1,0 +1,165 @@
+/*.login-container {
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 30px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  text-align: center;
+  background-color: #f9f9f9;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.login-form label {
+  margin-top: 10px;
+  text-align: left;
+}
+
+.login-form input {
+  padding: 8px;
+  margin-top: 5px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.login-form button {
+  margin-top: 20px;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+}
+
+.login-form button:hover {
+  background-color: #0056b3;
+} 
+
+.hero-image img {
+  max-width: 500px;
+  border-radius: 25px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s;
+
+}
+
+.hero-image img:hover {
+  transform: scale(1.05);
+}
+.login-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 50px;
+  margin-top: 50px;
+}*/
+/* =====================
+   LOGIN WRAPPER
+===================== */
+.login-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 100px; /* مسافة كبيرة باش يبان elegant */
+  min-height: 100vh;
+  padding: 40px;
+}
+
+/* =====================
+   LOGIN CONTAINER
+===================== */
+.login-container {
+  max-width: 550px;   /* كبرنا الفورم */
+  width: 100%;
+  padding: 50px;      /* padding كبير */
+  border-radius: 15px;
+  background: #ffffff;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+}
+
+/* Title */
+.login-container h2 {
+  margin-bottom: 25px;
+  font-size: 28px;
+  color: #1e2a78;
+}
+
+/* =====================
+   FORM
+===================== */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.login-form label {
+  font-size: 14px;
+  color: #555;
+}
+
+/* Inputs */
+.login-form input {
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  font-size: 15px;
+  transition: 0.3s;
+}
+
+.login-form input:focus {
+  outline: none;
+  border-color: #3b66f6;
+  box-shadow: 0 0 5px rgba(59, 102, 246, 0.3);
+}
+
+/* Button */
+.login-form button {
+  margin-top: 20px;
+  padding: 15px;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(135deg, #3b66f6, #6a7cff);
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.login-form button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(59, 102, 246, 0.3);
+}
+
+/* =====================
+   IMAGE
+===================== */
+.hero-image img {
+  max-width: 650px; /* كبرنا الصورة */
+  width: 100%;
+  border-radius: 25px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+  transition: 0.4s;
+}
+
+.hero-image img:hover {
+  transform: scale(1.05);
+}
+
+/* =====================
+   RESPONSIVE
+===================== */
+@media (max-width: 768px) {
+  .login-wrapper {
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .hero-image img {
+    max-width: 350px;
+  }
+}
